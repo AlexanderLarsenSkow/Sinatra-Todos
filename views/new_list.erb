@@ -1,8 +1,7 @@
-
-<form action = "/lists" method = "post">
+<form action = <%= @action_path %> method = "post">
 	<dl>
 		<dt>
-			<label for = "list_name">Enter the name for your new list:</label>
+			<label for = "list_name"><%= @label %></label>
 		</dt>	
 		<dd>
 			<input name = "list_name" place_holder = "List Name" type = "text" value = "">

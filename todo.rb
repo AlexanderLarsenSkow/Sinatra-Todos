@@ -37,6 +37,8 @@ get '/lists' do
 end
 
 get '/lists/new' do
+  @action_path = '/lists'
+  @label = 'Enter the name for your new list'
   erb :new_list
 end
 
@@ -71,11 +73,39 @@ post '/lists' do
   end
 end
 
+def set_up_list
+  @index = params['id'].to_i
+  @list = session[:lists][@index]
+  @name = @list[:name]
+  @todos = @list[:todos]
+end
+
 get '/lists/:id' do
-  index = params['id'].to_i
-  list = session[:lists][index]
-  @name = list[:name]
-  @todos = list[:todos]
+  set_up_list
 
   erb :todos, layout: :layout
+end
+
+get '/lists/:id/edit' do
+  @action_path = "/lists/#{params['id']}"
+  @label = 'Enter the new name for your list'
+  erb :new_list
+end
+
+post '/lists/:id' do
+  set_up_list
+
+  list_name = params[:list_name].strip
+  determine_error(list_name)
+
+  if session[:error]
+    erb :new_list, layout: :layout
+
+  else
+    @list[:name] = list_name
+    session[:success] = 'The list has been updated.'
+    redirect "/lists/#{@index}"
+
+    erb :todos, layout: :layout
+  end
 end

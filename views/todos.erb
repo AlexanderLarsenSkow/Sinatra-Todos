@@ -1,6 +1,7 @@
 <section id = "todos">
 	<header>
 		<h2><%= @name %></h2>
+		<a href = "/lists/<%= @index%>/edit">Edit List</a> 
 		<% unless @todos.empty? %>
 			<ul>
 			<% @todos.each do |todo| %>
