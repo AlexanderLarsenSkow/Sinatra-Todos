@@ -31,6 +31,7 @@ end
 
 get '/lists' do
   @lists = session[:lists]
+
   erb :lists, layout: :layout
 end
 
@@ -67,4 +68,13 @@ post '/lists' do
     session[:success] = 'The list has been created.'
     redirect '/lists'
   end
+end
+
+get '/lists/:id' do
+  index = params['id'].to_i
+  list = session[:lists][index]
+  @name = list[:name]
+  @todos = list[:todos]
+
+  erb :todos, layout: :layout
 end

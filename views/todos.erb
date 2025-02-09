@@ -1,0 +1,16 @@
+<section id = "todos">
+	<header>
+		<h2><%= @name %></h2>
+		<% unless @todos.empty? %>
+			<ul>
+			<% @todos.each do |todo| %>
+				<li>
+					<h2><%= todo %></h2>
+				</li>
+			<% end %>
+			</ul>
+		<% end %>
+	</header>
+</section>
+
+<a href = "/lists"><h2>All Lists</h2></a>
