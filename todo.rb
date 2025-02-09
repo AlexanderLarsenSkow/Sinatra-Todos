@@ -37,10 +37,6 @@ get '/lists' do
 end
 
 get '/lists/new' do
-  @action_path = '/lists'
-  @value = ''
-  @label = 'Enter the name for your new list'
-
   erb :new_list
 end
 
@@ -78,8 +74,8 @@ post '/lists' do
 end
 
 def set_up_list
-  @index = params['id'].to_i
-  @list = session[:lists][@index]
+  @id = params['id'].to_i
+  @list = session[:lists][@id]
   @name = @list[:name]
   @todos = @list[:todos]
 end
@@ -117,9 +113,25 @@ end
 
 post '/lists/:id/delete' do
   set_up_list
-  @id = params['id'].to_i
   session[:lists].delete_at(@id)
   session[:success] = 'The list has been deleted.'
 
   redirect '/lists'
+end
+
+post '/lists/:id/todos' do
+  set_up_list
+  @todo = params['todo'].strip
+
+  error = 'Todo must be between 1 and 100 characters'
+  session[:error] = error if invalid_size?(@todo)
+
+  if session[:error]
+    erb :todos
+
+  else
+    session[:success] = 'The todo was added.'
+    @list[:todos] << { name: @todo, completed: false }
+    redirect "lists/#{params[:id]}"
+  end
 end
