@@ -105,7 +105,7 @@ post '/lists/:id' do
   else
     @list[:name] = list_name
     session[:success] = 'The list has been updated.'
-    redirect "/lists/#{@index}"
+    redirect "/lists/#{@id}"
 
     erb :todos, layout: :layout
   end
@@ -143,5 +143,17 @@ post '/lists/:id/todos/:index/delete' do
   @todos.delete_at(todo_index)
   session[:success] = 'The todo has been deleted.'
 
+  redirect "/lists/#{@id}"
+end
+
+post '/lists/:id/todos/:index' do
+  set_up_list
+  todo_index = params[:index].to_i
+  todo = @todos[todo_index]
+
+  is_completed = params[:completed] == 'true'
+  todo[:completed] = is_completed
+
+  session[:success] = 'The todo has been updated.'
   redirect "/lists/#{@id}"
 end
