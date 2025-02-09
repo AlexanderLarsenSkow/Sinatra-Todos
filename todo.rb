@@ -104,7 +104,7 @@ post '/lists/:id' do
   determine_error(list_name)
 
   if session[:error]
-    erb :new_list, layout: :layout
+    erb :edit_list, layout: :layout
 
   else
     @list[:name] = list_name
@@ -113,4 +113,13 @@ post '/lists/:id' do
 
     erb :todos, layout: :layout
   end
+end
+
+post '/lists/:id/delete' do
+  set_up_list
+  @id = params['id'].to_i
+  session[:lists].delete_at(@id)
+  session[:success] = 'The list has been deleted.'
+
+  redirect '/lists'
 end
