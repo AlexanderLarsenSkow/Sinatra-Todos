@@ -11,6 +11,9 @@
     <header>
       <h1>Todo Tracker</h1>
     </header>
+		<%= flash_message(:success) %>
+		<%= flash_message(:error) %>
+
     <main>
       <%= yield %>
     </main>

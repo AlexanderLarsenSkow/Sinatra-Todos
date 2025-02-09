@@ -7,6 +7,22 @@ configure do
   set :session_secret, SecureRandom.hex(32)
 end
 
+helpers do
+  def flash_message(name)
+    if session[name]
+      <<~MESSAGE
+      <div class = "flash #{name}">
+        <p>#{session.delete(name)}</p>
+      </div>
+      MESSAGE
+    end
+  end
+end
+
+def good_size?(input)
+  (1..100).cover? input.size
+end
+
 before do
   session[:lists] ||= []
 end
@@ -26,7 +42,14 @@ get "/lists/new" do
 end
 
 post "/lists" do
-  session[:lists] << {name: params[:list_name], todos: []}
-  session[:success] = "The list has been created."
-  redirect "/lists"
+  list_name = params[:list_name].strip
+
+  if good_size?(list_name)
+    session[:lists] << {name: list_name , todos: []}
+    session[:success] = "The list has been created."
+    redirect "/lists"
+  else
+    session[:error] = "The list name must be between 1 and 100 characters."
+    erb :new_list, layout: :layout
+  end
 end
