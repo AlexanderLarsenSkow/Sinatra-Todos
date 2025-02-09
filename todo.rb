@@ -2,7 +2,7 @@
 
 require 'sinatra'
 require 'sinatra/reloader'
-require 'sinatra/content_for' 
+require 'sinatra/content_for'
 require 'tilt/erubi'
 
 configure do
@@ -38,7 +38,9 @@ end
 
 get '/lists/new' do
   @action_path = '/lists'
+  @value = ''
   @label = 'Enter the name for your new list'
+
   erb :new_list
 end
 
@@ -51,6 +53,8 @@ def existing_name?(input)
 end
 
 def determine_error(input)
+  return if @name == input
+
   if invalid_size?(input)
     session[:error] = 'The list name must be between 1 and 100 characters.'
 
@@ -60,6 +64,8 @@ def determine_error(input)
 end
 
 post '/lists' do
+  @action_path = '/lists'
+
   list_name = params[:list_name].strip
   determine_error(list_name)
 
@@ -76,6 +82,7 @@ end
 def set_up_list
   @index = params['id'].to_i
   @list = session[:lists][@index]
+  @action_path = "/lists/#{@index}"
   @name = @list[:name]
   @todos = @list[:todos]
 end
@@ -88,7 +95,9 @@ end
 
 get '/lists/:id/edit' do
   @action_path = "/lists/#{params['id']}"
+  @value = session[:lists][params['id'].to_i][:name]
   @label = 'Enter the new name for your list'
+
   erb :new_list
 end
 
