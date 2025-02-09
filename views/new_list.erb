@@ -1,15 +1,15 @@
-<form action = <%= @action_path %> method = "post">
+<form action = "/lists" method = "post">
 	<dl>
 		<dt>
-			<label for = "list_name"><%= @label %></label>
+			<label for = "list_name">Enter a name for your new list.</label>
 		</dt>	
 		<dd>
 			<input name = "list_name" place_holder = "List Name" type = "text"
-				 value = "<%= params["list_name"] || @value %>">
+				 value = "">
 		</dd>
 	</dl>
 	<fieldset class = "actions">
 		<input type = "submit" values = "Save">
-		<a href ="<%= @action_path %>">Cancel</a>
+		<a href ="/lists">Cancel</a>
 	</fieldset>
 </form>	

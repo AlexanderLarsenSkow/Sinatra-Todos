@@ -64,8 +64,6 @@ def determine_error(input)
 end
 
 post '/lists' do
-  @action_path = '/lists'
-
   list_name = params[:list_name].strip
   determine_error(list_name)
 
@@ -82,7 +80,6 @@ end
 def set_up_list
   @index = params['id'].to_i
   @list = session[:lists][@index]
-  @action_path = "/lists/#{@index}"
   @name = @list[:name]
   @todos = @list[:todos]
 end
@@ -94,11 +91,10 @@ get '/lists/:id' do
 end
 
 get '/lists/:id/edit' do
-  @action_path = "/lists/#{params['id']}"
-  @value = session[:lists][params['id'].to_i][:name]
-  @label = 'Enter the new name for your list'
+  @id = params['id']
+  @stored_name = session[:lists][params['id'].to_i][:name]
 
-  erb :new_list
+  erb :edit_list
 end
 
 post '/lists/:id' do
