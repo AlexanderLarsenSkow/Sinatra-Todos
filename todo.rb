@@ -17,6 +17,7 @@ end
 
 get "/lists" do
   @lists = session[:lists]
+  p session[:success]
   erb :lists, layout: :layout
 end
 
@@ -26,5 +27,6 @@ end
 
 post "/lists" do
   session[:lists] << {name: params[:list_name], todos: []}
+  session[:success] = "The list has been created."
   redirect "/lists"
 end
