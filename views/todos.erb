@@ -21,7 +21,7 @@
 </section>
 
 <% content_for :header_links do %>
-	<a href = "/lists"><h2>All Lists</h2></a>
+	<a class = "list" href = "/lists"><strong>All Lists</strong></a>
 <% end %>
 
 <form action="/lists/<%= @id %>/todos" method="post">
