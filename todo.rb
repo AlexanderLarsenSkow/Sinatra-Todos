@@ -135,3 +135,13 @@ post '/lists/:id/todos' do
     redirect "lists/#{params[:id]}"
   end
 end
+
+post '/lists/:id/todos/:index/delete' do
+  set_up_list
+  todo_index = params[:index].to_i
+
+  @todos.delete_at(todo_index)
+  session[:success] = 'The todo has been deleted.'
+
+  redirect "/lists/#{@id}"
+end

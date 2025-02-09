@@ -8,9 +8,12 @@
 
 	<% unless @todos.empty? %>
 		<ul>
-		<% @todos.each_with_index do |todo, index| %>
+		<% @todos.each_with_index do |todo, todo_index| %>
 			<li>
 				<h3><%= todo[:name] %></h3>
+				<form action="/lists/<%= @id %>/todos/<%= todo_index %>/delete" method="post" class="delete">
+  				<button type="submit">Delete</button>
+				</form>
 			</li>
 		<% end %>
 		</ul>
