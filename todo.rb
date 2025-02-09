@@ -19,14 +19,6 @@ helpers do
   end
 end
 
-def bad_size?(input)
-  !(1..100).cover? input.size
-end
-
-def existing_list?(input)
-  session[:lists].any? { |hash| hash[:name] == input } 
-end
-
 before do
   session[:lists] ||= []
 end
@@ -44,15 +36,28 @@ get "/lists/new" do
   erb :new_list
 end
 
+def invalid_size?(input)
+  !(1..100).cover? input.size
+end
+
+def existing_name?(input)
+  session[:lists].any? { |list| list[:name] == input } 
+end
+
+def determine_error(input)
+  if invalid_size?(input)
+    session[:error] = "The list name must be between 1 and 100 characters."
+
+  elsif existing_name?(input)
+    session[:error] = "The list name must be unique."
+  end
+end
+
 post "/lists" do
   list_name = params[:list_name].strip
+  determine_error(list_name)
 
-  if bad_size?(list_name)
-    session[:error] = "The list name must be between 1 and 100 characters."
-    erb :new_list, layout: :layout
-
-  elsif existing_list?(list_name)
-    session[:error] = "The list name must be unique."
+  if session[:error]
     erb :new_list, layout: :layout
     
   else  
