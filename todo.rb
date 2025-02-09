@@ -20,6 +20,22 @@ helpers do
       </div>
     MESSAGE
   end
+
+  def list_complete?(list)
+    todos = list[:todos]
+    todos.all? { |todo| todo[:completed] } && todos.size >= 1
+  end
+
+  def list_class(list)
+    'class = complete' if list_complete?(list)
+  end
+
+  def todos_completed(list)
+    todos = list[:todos]
+    total_complete = todos.count { |todo| todo[:completed] }
+
+    "<p>#{total_complete} / #{todos.size}</p>"
+  end
 end
 
 before do
@@ -156,10 +172,6 @@ post '/lists/:id/todos/:index' do
 
   session[:success] = 'The todo has been updated.'
   redirect "/lists/#{@id}"
-end
-
-def all_complete?
-  @todos.all? { |todo| todo[:completed] }
 end
 
 post '/lists/:id/complete_all' do
