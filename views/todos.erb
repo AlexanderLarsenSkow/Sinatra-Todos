@@ -13,21 +13,21 @@
 
 	<% unless @todos.empty? %>
 		<ul>
-		<% sort_items(:items).each_with_index do |todo, todo_index| %>
+		<% sort_items(:items).each do |todo| %>
 			<li
 			<% if todo[:completed] %>
 				class = "complete"
 			<% else %>
 				class = ""
 			<% end %>>
-				<form action="/lists/<%= @id %>/todos/<%= get_original_indicies(:todos)[todo_index] %>" 
+				<form action="/lists/<%= @id %>/todos/<%= todo[:id] %>"
 					method="post" class="check">
 					<input type="hidden" name="completed" value="<%= !todo[:completed] %>"/>
 					<button type="submit">Complete</button>
 				</form>
 
 				<h3><%= todo[:name] %></h3>
-				<form action="/lists/<%= @id %>/todos/<%= get_original_indicies(:todos)[todo_index] %>/delete" 
+				<form action="/lists/<%= @id %>/todos/<%= todo[:id] %>/delete" 
 					method="post" class="delete">
   				<button type="submit">Delete</button>
 				</form>

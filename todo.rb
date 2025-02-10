@@ -167,13 +167,19 @@ post '/lists/:id/delete' do
   set_up_list
   session[:lists].delete_at(@id)
 
-  if env["X_REQUESTED_WITH_HTTP"] == 'XMLHttpRequest'
+  if env["HTTP_X_REQUESTED_WITH"] == 'XMLHttpRequest'
+     session[:success] = 'The list has been deleted.'
     '/lists'
   
   else
     session[:success] = 'The list has been deleted.'
     redirect '/lists'
   end
+end
+
+def next_todo_id(todos)
+  max =   todos.map { |todo| todo[:id] }.max || -1
+  max + 1
 end
 
 post '/lists/:id/todos' do
@@ -188,18 +194,21 @@ post '/lists/:id/todos' do
 
   else
     session[:success] = 'The todo was added.'
-    @list[:todos] << { name: @todo, completed: false }
+    todo_id = next_todo_id(@todos)
+    @list[:todos] << { id: todo_id, name: @todo, completed: false}
     redirect "lists/#{params[:id]}"
   end
 end
 
-post '/lists/:id/todos/:index/delete' do
+post '/lists/:id/todos/:todo_id/delete' do
   set_up_list
-  todo_index = params[:index].to_i
+  todo_id = params[:todo_id].to_i
+  todo = @todos.find { |todo| todo[:id] == todo_id }
 
-  @todos.delete_at(todo_index)
+  @todos.delete(todo)
 
   if env["HTTP_X_REQUESTED_WITH"] == 'XMLHttpRequest'
+    session[:success] = 'The todo has been deleted.'
     status 204
   
   else
@@ -208,10 +217,10 @@ post '/lists/:id/todos/:index/delete' do
   end
 end
 
-post '/lists/:id/todos/:index' do
+post '/lists/:id/todos/:todo_id' do
   set_up_list
-  todo_index = params[:index].to_i
-  todo = @todos[todo_index]
+  todo_id = params[:todo_id].to_i
+  todo = @todos.find { |todo| todo[:id] == todo_id }
 
   is_completed = params[:completed] == 'true'
   todo[:completed] = is_completed
