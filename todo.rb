@@ -68,6 +68,10 @@ before do
   session[:lists] ||= []
 end
 
+not_found do
+  redirect '/lists'
+end
+
 get '/' do
   redirect '/lists'
 end
@@ -118,6 +122,12 @@ end
 def set_up_list
   @id = params['id'].to_i
   @list = session[:lists][@id]
+
+  if @id >= session[:lists].size
+    session[:error] = 'The specified list was not found.'
+    redirect '/lists'
+  end
+
   @name = @list[:name]
   @todos = @list[:todos]
 end
@@ -129,7 +139,7 @@ get '/lists/:id' do
 end
 
 get '/lists/:id/edit' do
-  @id = params['id']
+  set_up_list
   @stored_name = session[:lists][params['id'].to_i][:name]
 
   erb :edit_list
