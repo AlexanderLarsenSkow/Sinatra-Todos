@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'sinatra'
-require 'sinatra/reloader'
+require 'sinatra/reloader' if development?
 require 'sinatra/content_for'
 require 'tilt/erubi'
 
@@ -50,7 +50,7 @@ helpers do
       @lists.map.with_index { |list, idx| [idx, list] }
     else
       @todos.map.with_index { |todo, idx| [idx, todo] }
-    end  
+    end
   end
 
   def get_original_indicies(items)
