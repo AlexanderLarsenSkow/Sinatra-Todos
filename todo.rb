@@ -36,6 +36,31 @@ helpers do
 
     "<p>#{total_complete} / #{todos.size}</p>"
   end
+
+  def sort_items(items)
+    if items == :lists
+      @lists.sort_by { |list| list_complete?(list) ? 1 : 0 }
+    else
+      @todos.sort_by { |todo| todo[:completed] ? 1 : 0 }
+    end
+  end
+
+  def store_indicies(items)
+    if items == :lists
+      @lists.map.with_index { |list, idx| [idx, list] }
+    else
+      @todos.map.with_index { |todo, idx| [idx, todo] }
+    end  
+  end
+
+  def get_original_indicies(items)
+    indicies = []
+    sort_items(items).each do |sorted_item|
+      sel = store_indicies(items).select { |subarray| subarray[1] == sorted_item }
+      indicies << sel[0][0]
+    end
+    indicies
+  end
 end
 
 before do
