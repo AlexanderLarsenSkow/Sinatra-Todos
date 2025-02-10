@@ -3,7 +3,7 @@
 		<li <%= list_class(list) %>>
 			<a href = "/lists/<%= get_original_indicies(:lists)[index] %>">
 				<h2><%= list[:name] %></h2>
-				<%=todos_completed(list)%>
+				<%== todos_completed(list) %>
 			</a>
 		</li>
 	<% end %>
