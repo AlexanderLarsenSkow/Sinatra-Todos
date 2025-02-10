@@ -1,7 +1,7 @@
 <ul id = "lists">
-	<% sort_items(:lists).each_with_index do |list, index| %>
+	<% sort_items(:lists).each do |list| %>
 		<li <%= list_class(list) %>>
-			<a href = "/lists/<%= get_original_indicies(:lists)[index] %>">
+			<a href = "/lists/<%= list[:id] %>">
 				<h2><%= list[:name] %></h2>
 				<%== todos_completed(list) %>
 			</a>

@@ -45,23 +45,6 @@ helpers do
       @todos.sort_by { |todo| todo[:completed] ? 1 : 0 }
     end
   end
-
-  def store_indicies(items)
-    if items == :lists
-      @lists.map.with_index { |list, idx| [idx, list] }
-    else
-      @todos.map.with_index { |todo, idx| [idx, todo] }
-    end
-  end
-
-  def get_original_indicies(items)
-    indicies = []
-    sort_items(items).each do |sorted_item|
-      sel = store_indicies(items).select { |subarray| subarray[1] == sorted_item }
-      indicies << sel[0][0]
-    end
-    indicies
-  end
 end
 
 before do
@@ -105,7 +88,13 @@ def determine_error(input)
   end
 end
 
+def next_id(items)
+  max = items.map { |item| item[:id] }.max || -1
+  max + 1
+end
+
 post '/lists' do
+  @lists = session[:lists]
   list_name = params[:list_name].strip
   determine_error(list_name)
 
@@ -113,17 +102,19 @@ post '/lists' do
     erb :new_list, layout: :layout
 
   else
-    session[:lists] << { name: list_name, todos: [] }
+    session[:lists] << { id: next_id(@lists), name: list_name, todos: [] }
     session[:success] = 'The list has been created.'
     redirect '/lists'
   end
 end
 
 def set_up_list
+  @lists = session[:lists]
   @id = params['id'].to_i
-  @list = session[:lists][@id]
+  @list = @lists.find { |list| list[:id] == @id }
+  p @id
 
-  if @id >= session[:lists].size
+  if @lists.none? { |list| list[:id] == @id }
     session[:error] = 'The specified list was not found.'
     redirect '/lists'
   end
@@ -140,7 +131,7 @@ end
 
 get '/lists/:id/edit' do
   set_up_list
-  @stored_name = session[:lists][params['id'].to_i][:name]
+  @stored_name = @name
 
   erb :edit_list
 end
@@ -165,7 +156,7 @@ end
 
 post '/lists/:id/delete' do
   set_up_list
-  session[:lists].delete_at(@id)
+  @lists.delete(@list)
 
   if env["HTTP_X_REQUESTED_WITH"] == 'XMLHttpRequest'
      session[:success] = 'The list has been deleted.'
@@ -175,11 +166,6 @@ post '/lists/:id/delete' do
     session[:success] = 'The list has been deleted.'
     redirect '/lists'
   end
-end
-
-def next_todo_id(todos)
-  max =   todos.map { |todo| todo[:id] }.max || -1
-  max + 1
 end
 
 post '/lists/:id/todos' do
@@ -194,7 +180,7 @@ post '/lists/:id/todos' do
 
   else
     session[:success] = 'The todo was added.'
-    todo_id = next_todo_id(@todos)
+    todo_id = next_id(@todos)
     @list[:todos] << { id: todo_id, name: @todo, completed: false}
     redirect "lists/#{params[:id]}"
   end
